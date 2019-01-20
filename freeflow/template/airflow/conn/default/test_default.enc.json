@@ -1,0 +1,25 @@
+{
+	"conn_id": "ENC[AES256_GCM,data:TGLbfnaZcD1epbDL,iv:Cn0jmKGf+gAKQFvmoUc9IDxh4B/anJDZMS1b2EEHgHo=,tag:2JubeY9Xo+hfZeoYLVZsTQ==,type:str]",
+	"conn_type": "ENC[AES256_GCM,data:9YJS1OOuy0De0pzFrj+Sa1v3O/6Z,iv:yZmMx8AN1QiXMC/lr9Fvez3evcHpMqLFoh7Pnse+iSo=,tag:bzTKbesjuG87BNZhyAAYvg==,type:str]",
+	"conn_extra": {
+		"extra__google_cloud_platform__scope": "ENC[AES256_GCM,data:e8yKyeeRJRuD1rcqc4SG99dZrGJism1Nd58P4gtMclQEA7l5PJvOMxvmpA8/YgfJyGYSAXQyAgEH7fdWr/M/9zEtKoFS6dQShMqL9FF58s0W6PeiPZi8,iv:8SziZS1a5JEsyTEHtb077fOnch0/uAIF/ITKftl8Utk=,tag:Smreq/eQq4Nzyc5tJ3cSqg==,type:str]",
+		"extra__google_cloud_platform__project": "ENC[AES256_GCM,data:+KrtZ2v8ncPHScZbDq0=,iv:U71jCEad4q+euGOou2cEa8mBJzVYYItogLsN6exa+wY=,tag:aLjwRsUbK/z5+AQVgAUKWw==,type:str]",
+		"extra__google_cloud_platform__keyfile_dict": "ENC[AES256_GCM,data:7oA=,iv:PmZ8bE2b0L1IpFSap8laTsBbabDAvOCILWXuH4vIhkI=,tag:KCHS8s0eL39UetViV64kVQ==,type:str]"
+	},
+	"sops": {
+		"kms": null,
+		"gcp_kms": [
+			{
+				"resource_id": "projects/tvlk-mkt-productfeed-prod/locations/global/keyRings/productfeed-prod/cryptoKeys/general",
+				"created_at": "2019-01-20T06:45:47Z",
+				"enc": "CiQANBF8EXmN8ZuMrLE1ES/qRnpsF2wQr1JJiZMETlGvaUBsrKsSSQDi/jgihS/G5dTQXqSRd/Mm/cJkj32SVSMusmscpmP7jCgUpovSGM9kT5qAPbiBIqL2qO1aoMDTPhw2Qrk6ICVvqJfCHQBEzuo="
+			}
+		],
+		"azure_kv": null,
+		"lastmodified": "2019-01-20T06:45:47Z",
+		"mac": "ENC[AES256_GCM,data:VPAIgpccc6ZmwPiBd5FzJaWoF1m4csh6GrOJ+Bu8rz9WsY59skj4/FARqGVA/ygls/OURJpI145qT8PJP0UaEgvYGCbqD2UHefpFZTstG5lRTAUFHZvuagiMttqBgdE+pdmwUllBwpv+baG50S1g/kosVlEUOod/WVMy08tWrQ8=,iv:62v4bdRHl+hNa3LdTUJ/yIkP3jS4X1jgIGtJuyaQLzQ=,tag:ipDM5kCt/MHXvIqBrBAxzA==,type:str]",
+		"pgp": null,
+		"unencrypted_suffix": "_unencrypted",
+		"version": "3.2.0"
+	}
+}
