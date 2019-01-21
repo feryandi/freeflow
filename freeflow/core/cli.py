@@ -17,7 +17,6 @@ import freeflow.test
 from freeflow.core.initialization.direct import DirectInitialization
 from freeflow.core.deployment.direct import (DirectVariable, DirectConfiguration, DirectConnection, DirectPool)
 
-
 # TO-DO: environment choice (based on conf files)
 
 def clean():
@@ -38,7 +37,7 @@ def initialize(command):
 
 def test(command):
   try:
-    clean() # To prevent pyc files to be considered as DAG
+    clean() # Prevent pyc files to be considered as DAG
     deploy(command)
     freeflow.test.run()
   except Exception as e:
@@ -102,7 +101,7 @@ class Command(object):
     self.path_conf = "{}/airflow/conf/{}".format(CURRENT_WORKING_DIR,
                                                  self.config.get('imports', 'conf'))
     self.path_vars = "{}/airflow/vars/{}".format(CURRENT_WORKING_DIR,
-                                                 self.config.get('imports', 'var'))
+                                                 self.config.get('imports', 'vars'))
     self.path_conn = "{}/airflow/conn/{}".format(CURRENT_WORKING_DIR,
                                                  self.config.get('imports', 'conn'))
     self.path_pool = "{}/airflow/pool/{}".format(CURRENT_WORKING_DIR,
@@ -124,5 +123,3 @@ class Command(object):
 def execute(argv=None):
   command = Command(argv)
   command.execute()
-
-# execute()
