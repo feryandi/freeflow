@@ -3,32 +3,26 @@
 
 import unittest
 import os
+import pprint
 
-import freeflow.core.dag_loader as dag_loader
+import freeflow.test
 
-import google
 import pendulum
 
 from airflow import models as af_models
 from airflow.contrib.operators.bigquery_operator import BigQueryOperator
-
-from google.cloud import bigquery
+from airflow.contrib.hooks.bigquery_hook import BigQueryHook
 
 # CRITICAL
 # CRITICAL
 # CRITICAL
 # TO-DO: rethink how to test this without preparing all the credentials. (e.g. use the Bigquery Hook)
 
-SCOPE = ('https://www.googleapis.com/auth/bigquery',
-         'https://www.googleapis.com/auth/cloud-platform',
-         'https://www.googleapis.com/auth/drive',
-         'https://www.googleapis.com/auth/devstorage.read_write')
-
 class OperatorBigqueryTest(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls._dag_files = dag_loader.get_dag_files()
+        cls._dag_files = freeflow.test.dag_files
 
     def test_operator_bigquery(self):
 
@@ -45,40 +39,52 @@ class OperatorBigqueryTest(unittest.TestCase):
             return task.__class__.template_fields
 
 
-        def dry_run_bql(query):
+        def dry_run_bql(task):
             """ Call the BigQuery dry run API to run the rendered query """
-            job_config = bigquery.QueryJobConfig()
-            job_config.dry_run = True
-            job_config.use_query_cache = False
+            query = getattr(task, 'bql')
 
-            query_job = client.query((query),
-                                     location='US',
-                                     job_config=job_config)
+            hook = BigQueryHook(bigquery_conn_id=task.bigquery_conn_id,
+                                delegate_to=task.delegate_to)
+            conn = hook.get_conn()
+            cursor = conn.cursor()
 
-            if query_job.state != 'DONE':
-                raise Exception('Dry run state is not `DONE`')
-            return query_job.dry_run
+            job_data = {
+                'configuration': {
+                    'dryRun': True,
+                    'query': {
+                        'query': query,
+                        'useLegacySql': task.use_legacy_sql,
+                        'maximumBillingTier': task.maximum_billing_tier
+                    }
+                }
+            }
 
-            # Do we need also monitor the bytes processed?
-            # query_job.total_bytes_processed
+            jobs = cursor.service.jobs()
+            query_reply = jobs \
+                .insert(projectId=cursor.project_id, body=job_data) \
+                .execute()
 
-        credentials, _ = google.auth.default(scopes=SCOPE)
+            return query_reply
 
-        client = bigquery.Client(credentials=credentials)
-
-        for file in self._dag_files:
-            for task in file['instance']['tasks']:
-                try:
+        def get_bq_tasks(dag_files):
+            tasks = []
+            for file in dag_files:
+                for task in file['instance']['tasks']:
                     if isinstance(task, BigQueryOperator):
-                        template_fields = get_rendered_template(task)
+                        tasks += [task]
+            return tasks
 
-                        for template_field in template_fields:
-                            if template_field == 'bql':
-                                query = getattr(task, template_field)
-                                assert dry_run_bql(query)
+        tasks = get_bq_tasks(self._dag_files)
+
+        if len(tasks) != 0:
+
+            for task in tasks:
+                try:
+                    get_rendered_template(task)
+                    dry_run_bql(task)
 
                 except Exception as e:
-                    raise Exception("File: " + file['filename'] + ', Task: ' + task.task_id + ', ' + str(e))
+                    raise Exception('Task: ' + task.task_id + ', ' + str(e))
                     assert False
 
 if __name__ == '__main__':

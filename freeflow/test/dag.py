@@ -4,7 +4,7 @@
 import unittest
 import os
 
-import freeflow.core.dag_loader as dag_loader
+import freeflow.test
 
 from airflow import models as af_models
 
@@ -12,7 +12,7 @@ class DagTest(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls._dag_files = dag_loader.get_dag_files()
+        cls._dag_files = freeflow.test.dag_files
 
     def test_dag_integrity(self):
 

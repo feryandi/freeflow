@@ -16,6 +16,7 @@ os.environ.setdefault('ENV', 'default')
 try:
   import freeflow.test
   from freeflow.core.deployment.direct import (DirectVariable, DirectConfiguration, DirectConnection, DirectPool)
+  from freeflow.core.cli import execute
 except ImportError as e:
   print(e)
   raise ImportError(
@@ -48,16 +49,18 @@ PATH_POOL = "{}/airflow/pool".format(CWD)
 
 CMD_CONFIG = None
 
-def main():
+def main(argv=None):
   global CMD_CONFIG
   CMD_CONFIG = read_configuration('{}/conf/{}.cfg'.format(CWD, os.environ.get('ENV')))
   # test()
   # lint()
-  initialize()
-  deploy()
+  # initialize()
+  # deploy()
   # encrypt()
+  execute(argv)
 
   # decrypt('{}/airflow/conn/default/test_default.enc.json'.format(CWD))
+  # decrypt_folder('{}/airflow/conn/default'.format(CWD))
 
   # set_connections('./airflow/conn/default/test_default.json')
 
@@ -69,22 +72,6 @@ def main():
   # command = ['./bin/freeflow.sh'] + sys.argv[1:]
   # process = subprocess.Popen(command, stderr=subprocess.PIPE)
   # out, err = process.communicate()
-
-def encrypt():
-  print('Use sops to encrypt the file.')
-  print('Learn more at https://github.com/mozilla/sops')
-
-def decrypt(path):
-  print(path)
-  cmd = ['sops', '-d', path]
-  try:
-    output = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
-  except subprocess.CalledProcessError as e:
-    print(e.output)
-  except OSError as e:
-    print("Couldn't find sops. Are you sure it's installed?")
-  else:
-    return output
 
 def test():
   # tests = unittest.TestLoader().discover(start_dir='tests')

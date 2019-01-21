@@ -9,7 +9,7 @@ from airflow.models import BaseOperator
 def explore_package(module_name):
     """ This function returns all of the DAG within dag folder """
     loader = pkgutil.get_loader(module_name)
-    assert loader is not None, "Cannot find any DAG files on module {}".format(module_name)
+    assert loader is not None, "Cannot find any DAG files on module '{}'".format(module_name)
     for sub_module in pkgutil.walk_packages([loader.filename]):
         _, sub_module_name, _ = sub_module
         qname = module_name + "." + sub_module_name

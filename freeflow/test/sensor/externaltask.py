@@ -4,7 +4,7 @@
 import unittest
 import os
 
-import freeflow.core.dag_loader as dag_loader
+import freeflow.test
 
 from airflow.operators.sensors import ExternalTaskSensor
 
@@ -13,7 +13,7 @@ class SensorExternalTaskTest(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls._dag_files = dag_loader.get_dag_files()
+        cls._dag_files = freeflow.test.dag_files
 
     def test_sensor_external_task(self):
 
@@ -54,7 +54,7 @@ class SensorExternalTaskTest(unittest.TestCase):
                         current_dag = file['instance']['dags'][0].dag_id
                         check_depend_itself(current_dag, task)
                         check_external_dag_availability(task, dags_available)
-                        check_external_task_availability(task, dags_available, dag_files)
+                        check_external_task_availability(task, dags_available, self._dag_files)
                         # check_valid_execution_value(task, external_task)
                 except Exception as e:
                     raise Exception("File: " + file['filename'] + ', Task: ' + task.task_id + ', ' + str(e))

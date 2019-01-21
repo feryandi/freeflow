@@ -12,6 +12,8 @@ except ImportError:
     "Couldn't find Airflow. Are you sure it's installed?"
   )
 
+from freeflow.core.security import decrypt
+
 class DirectDeploy(object):
 
   def __init__(self):
@@ -88,28 +90,38 @@ class DirectConnection(DirectDeploy):
     super(DirectConnection, self).__init__()
 
   def batch(self, path):
-    for file in glob.glob("{}/*[!.enc].json".format(path)):
+    for file in glob.glob("{}/*.json".format(path)):
       self.set(file)
 
   def set(self, path):
-    with open(path) as file:
-      data = json.load(file)
-      cmd = ['connections', '-a']
+    encrypted = False
+    if ".enc." in path:
+      encrypted = True
 
-      available_args = ['conn_id', 'conn_uri', 'conn_extra',
-                        'conn_type', 'conn_host', 'conn_login',
-                        'conn_password', 'conn_schema', 'conn_port']
+    data = None
 
-      for arg in available_args:
-        if data.get(str(arg)) is not None:
-          param = data.get(str(arg))
-          if not isinstance(param, basestring):
-            param = json.dumps(param)
+    if encrypted:
+      data = json.loads(decrypt(path))
+    else:
+      with open(path) as file:
+        data = json.load(file)
 
-          cmd += ['--{}'.format(arg), str(param)]
+    cmd = ['connections', '-a']
 
-      self.delete(data.get('conn_id'))
-      super(DirectConnection, self).run(cmd)
+    available_args = ['conn_id', 'conn_uri', 'conn_extra',
+                      'conn_type', 'conn_host', 'conn_login',
+                      'conn_password', 'conn_schema', 'conn_port']
+
+    for arg in available_args:
+      if data.get(str(arg)) is not None:
+        param = data.get(str(arg))
+        if not isinstance(param, basestring):
+          param = json.dumps(param)
+
+        cmd += ['--{}'.format(arg), str(param)]
+
+    self.delete(data.get('conn_id'))
+    super(DirectConnection, self).run(cmd)
 
   def delete(self, key):
     cmd = ['connections', '-d', '--conn_id', key]
@@ -122,7 +134,7 @@ class DirectPool(DirectDeploy):
     super(DirectPool, self).__init__()
 
   def batch(self, path):
-    for file in glob.glob("{}/*[!.enc].json".format(path)):
+    for file in glob.glob("{}/*.json".format(path)):
       self.set(file)
 
   def set(self, path):
