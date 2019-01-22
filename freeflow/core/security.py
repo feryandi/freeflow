@@ -11,8 +11,7 @@ def decrypt(path):
   try:
     output = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
   except subprocess.CalledProcessError as exception:
-    print(exception.output)
-    raise exception
+    raise RuntimeError(exception.output)
   except OSError as exception:
     print("Couldn't find sops. Are you sure it's installed?")
     print("Learn more at https://github.com/mozilla/sops")

@@ -1,6 +1,7 @@
 import ConfigParser
 import glob
 import os
+
 try:
   from airflow.utils import db
 except ImportError:

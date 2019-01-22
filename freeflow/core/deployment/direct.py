@@ -3,6 +3,9 @@ import glob
 import os
 import json
 
+from freeflow.core.security import decrypt
+from freeflow.core.log import (SuppressPrints, Logged)
+
 try:
   from airflow.bin import cli
   from airflow import settings
@@ -12,17 +15,17 @@ except ImportError:
     "Couldn't find Airflow. Are you sure it's installed?"
   )
 
-from freeflow.core.security import decrypt
-
-class DirectDeploy(object):
+class DirectDeploy(Logged):
 
   def __init__(self):
+    super(DirectDeploy, self).__init__()
     self._airflow_home = os.environ.get('AIRFLOW_HOME', '~/')
 
   def run(self, args):
-    parser = cli.get_parser()
-    args = parser.parse_args(args)
-    args.func(args)
+    with SuppressPrints():
+      parser = cli.get_parser()
+      args = parser.parse_args(args)
+      args.func(args)
 
   def batch(self, path):
     raise NotImplemented('Batch set not yet implemented for this setup.')
@@ -42,10 +45,24 @@ class DirectVariable(DirectDeploy):
   def __init__(self):
     super(DirectVariable, self).__init__()
 
+  def __check_json(self, path):
+    with open(path, 'r') as varfile:
+      var = varfile.read()
+
+    try:
+      d = json.loads(var)
+    except Exception:
+      raise IOError("Invalid variables file.")
+
   def set(self, path):
+    if not os.path.exists(path):
+      raise IOError("Missing variables file.")
+    self.__check_json(path)
+
     cmd = ['variables', '-i', path]
-    print(path)
+    self.log.debug("Importing variables from file: {}".format(path))
     super(DirectVariable, self).run(cmd)
+    self.log.info("Successfully updated variables")
 
   def drop(self):
     session = settings.Session()
@@ -61,7 +78,7 @@ class DirectConfiguration(DirectDeploy):
 
   def read(self, path):
     if not os.path.exists(path):
-      print("Missing configuration file.")
+      raise IOError("Missing configuration file.")
 
     conf = ConfigParser.ConfigParser()
     conf.read(path)
@@ -77,8 +94,8 @@ class DirectConfiguration(DirectDeploy):
 
     for section in imported_config.sections():
       for (key, val) in imported_config.items(section):
-        print("Adding [{}] {} = {}".format(section, key, val))
         airflow_config.set(section, key, val)
+        self.log.info("Added [{}] {} = {}".format(section, key, val))
 
     with open(airflow_config_path, 'wb') as config_file:
       airflow_config.write(config_file)
@@ -90,10 +107,17 @@ class DirectConnection(DirectDeploy):
     super(DirectConnection, self).__init__()
 
   def batch(self, path):
+    if not os.path.isdir(path):
+      raise IOError("Connection folder not found.")
+
     for file in glob.glob("{}/*.json".format(path)):
+      self.log.debug("Processing connection file: {}".format(file))
       self.set(file)
 
   def set(self, path):
+    if not os.path.exists(path):
+      raise IOError("Missing connection file.")
+
     encrypted = False
     if ".enc." in path:
       encrypted = True
@@ -123,6 +147,8 @@ class DirectConnection(DirectDeploy):
     self.delete(data.get('conn_id'))
     super(DirectConnection, self).run(cmd)
 
+    self.log.info("Added '{}' connection with name: {}".format(data.get('conn_type'), data.get('conn_id')))
+
   def delete(self, key):
     cmd = ['connections', '-d', '--conn_id', key]
     super(DirectConnection, self).run(cmd)
@@ -134,10 +160,17 @@ class DirectPool(DirectDeploy):
     super(DirectPool, self).__init__()
 
   def batch(self, path):
+    if not os.path.isdir(path):
+      raise IOError("Pool folder not found.")
+
     for file in glob.glob("{}/*.json".format(path)):
+      self.log.debug("Processing pool file: {}".format(file))
       self.set(file)
 
   def set(self, path):
+    if not os.path.exists(path):
+      raise IOError("Missing pool file.")
+
     with open(path) as file:
       data = json.load(file)
       cmd = ['pool', '-s']
@@ -151,6 +184,7 @@ class DirectPool(DirectDeploy):
 
       self.delete(data.get('name'))
       super(DirectPool, self).run(cmd)
+      self.log.info("Added pool '{}' with {} slot(s).".format(data.get('name'), data.get('slot_count')))
 
   def delete(self, key):
     cmd = ['pool', '-x', key]

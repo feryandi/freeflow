@@ -58,7 +58,7 @@ class SensorExternalTaskTest(unittest.TestCase):
                         # check_valid_execution_value(task, external_task)
                 except Exception as e:
                     raise Exception("File: " + file['filename'] + ', Task: ' + task.task_id + ', ' + str(e))
-                    assert False
+                    self.assertTrue(False)
 
 
 if __name__ == '__main__':

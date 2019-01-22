@@ -13,10 +13,6 @@ from airflow import models as af_models
 from airflow.contrib.operators.bigquery_operator import BigQueryOperator
 from airflow.contrib.hooks.bigquery_hook import BigQueryHook
 
-# CRITICAL
-# CRITICAL
-# CRITICAL
-# TO-DO: rethink how to test this without preparing all the credentials. (e.g. use the Bigquery Hook)
 
 class OperatorBigqueryTest(unittest.TestCase):
 
@@ -85,7 +81,7 @@ class OperatorBigqueryTest(unittest.TestCase):
 
                 except Exception as e:
                     raise Exception('Task: ' + task.task_id + ', ' + str(e))
-                    assert False
+                    self.assertTrue(False)
 
 if __name__ == '__main__':
     unittest.main()

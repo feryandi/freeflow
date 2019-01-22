@@ -12,10 +12,11 @@ except ImportError:
     "Couldn't find Flake8. Are you sure it's installed?"
   )
 
-import freeflow.test
-
+from freeflow.core.log import Logged
 from freeflow.core.initialization.direct import DirectInitialization
 from freeflow.core.deployment.direct import (DirectVariable, DirectConfiguration, DirectConnection, DirectPool)
+
+import freeflow.test
 
 # TO-DO: environment choice (based on conf files)
 
@@ -26,14 +27,17 @@ def clean():
     if file.endswith(".pyc"):
       os.remove(os.path.join(path, file))
 
+
 def helper(command):
   print("Available commands:")
   for argument in command.arguments:
     print("  {:<8}\t\t{}".format(argument, command.arguments[argument]['desc']))
 
+
 def initialize(command):
   init = DirectInitialization(command.path_conf)
   init.run()
+
 
 def test(command):
   try:
@@ -43,31 +47,33 @@ def test(command):
   except Exception as e:
     print(e)
 
+
 def lint(command):
   flake8.main(['dags', 'tests'])
 
+
 def deploy(command):
-  print("Applying variables")
+  command.log.info("Applying variables")
   d = DirectVariable()
   d.drop()
   d.set(command.path_vars)
 
-  print("Applying configuration")
+  command.log.info("Applying configuration")
   d = DirectConfiguration()
   d.set(command.path_conf)
 
-  print("Applying connection")
+  command.log.info("Applying connection")
   d = DirectConnection()
   d.batch(command.path_conn)
 
-  print("Applying pool")
+  command.log.info("Applying pool")
   d = DirectPool()
   d.batch(command.path_pool)
 
-  print("Done")
+  command.log.warn("Migrating DAG (plugins, data?) folder")
 
 
-class Command(object):
+class Command(Logged):
   arguments = {
     'help': {
       'func': helper,
@@ -93,6 +99,8 @@ class Command(object):
   }
 
   def __init__(self, argv=None):
+    super(Command, self).__init__()
+
     self.argv = argv or sys.argv[:]
     self.config_path = '{}/conf/{}.cfg'.format(CURRENT_WORKING_DIR,
                                                os.environ.get('ENV', 'default'))
@@ -114,10 +122,13 @@ class Command(object):
 
   def execute(self):
     try:
-      command = self.arguments[self.argv[1]]
-      command['func'](self)
+      command = self.arguments.get(self.argv[1])
+      if command is None:
+        helper(self)
+      else:
+        command['func'](self)
     except Exception as e:
-      helper(self)
+      self.log.error("{}".format(str(e).replace('\n', ' ')))
 
 
 def execute(argv=None):
