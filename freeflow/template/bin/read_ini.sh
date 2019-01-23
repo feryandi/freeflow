@@ -1,1 +1,0 @@
-bash_ini_parser/read_ini.sh

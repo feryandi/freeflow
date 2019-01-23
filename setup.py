@@ -13,8 +13,9 @@ setup(name='freeflow',
         'flake8>=3.6.0',
         'google-api-python-client==1.7.4',
         'google-cloud-bigquery==1.6.0',
-        'pendulum==2.0.3',
+        'pendulum==2.0.4',
         'pandas-gbq==0.6.1',
+        'pytest==4.1.1',
         'oauth2client==4.1.3'
       ],
       zip_safe=False)

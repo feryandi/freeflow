@@ -9,7 +9,7 @@ except ImportError as e:
   )
 
 ## TO-DO Core capability:
-# - deploying: locally and composer (setup vars, conn, etc)
+# - deploying: composer (setup vars, conn, etc)
 # - running the thing? running the thing!
 
 def main(argv=None):
