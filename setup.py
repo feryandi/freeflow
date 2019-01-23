@@ -12,10 +12,11 @@ setup(name='freeflow',
         'apache-airflow[crypto]==1.9.0',
         'flake8>=3.6.0',
         'google-api-python-client==1.7.4',
-        'google-cloud-bigquery==1.6.0',
+        'google-cloud-bigquery==1.8.1',
         'pendulum==2.0.4',
         'pandas-gbq==0.6.1',
         'pytest==4.1.1',
-        'oauth2client==4.1.3'
+        'oauth2client==4.1.3',
+        'google-cloud-storage==1.13.2'
       ],
       zip_safe=False)

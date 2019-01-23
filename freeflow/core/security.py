@@ -1,6 +1,5 @@
 import glob
 import subprocess
-import os
 
 def encrypt():
   print("Use sops to encrypt the file.")

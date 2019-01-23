@@ -4,7 +4,7 @@ import os
 import sys
 
 CURRENT_WORKING_DIR = os.path.dirname(os.path.realpath('__file__'))
-os.environ.setdefault('AIRFLOW_HOME', CURRENT_WORKING_DIR)
+os.environ['AIRFLOW_HOME'] = CURRENT_WORKING_DIR
 
 try:
   from flake8.main import cli as flake8
@@ -22,7 +22,9 @@ except ImportError:
 
 from freeflow.core.log import Logged
 from freeflow.core.initialization.direct import DirectInitialization
+from freeflow.core.deployment.base import BatchDeploy
 from freeflow.core.deployment.direct import (DirectVariable, DirectConfiguration, DirectConnection, DirectPool)
+from freeflow.core.deployment.composer import (ComposerVariable, ComposerConfiguration, ComposerConnection, ComposerPool)
 
 import freeflow.test
 
@@ -65,24 +67,41 @@ def lint(command):
 
 
 def deploy(command):
+  deploy = Deploy().get_classes(command.config.get('core', 'type'))
+
   command.log.info("Applying variables")
-  d = DirectVariable()
-  d.drop()
-  d.set(command.path['vars'])
+  deploy['vars'](command.path['vars'], command.config).deploy()
 
   command.log.info("Applying configuration")
-  d = DirectConfiguration()
-  d.set(command.path['conf'])
+  deploy['conf'](command.path['conf'], command.config).deploy()
 
   command.log.info("Applying connection")
-  d = DirectConnection()
-  d.batch(command.path['conn'])
+  BatchDeploy(command.path['conn'], command.config, deploy['conn']).deploy()
 
   command.log.info("Applying pool")
-  d = DirectPool()
-  d.batch(command.path['pool'])
+  BatchDeploy(command.path['pool'], command.config, deploy['pool']).deploy()
 
   command.log.warn("Migrating DAG (plugins, data?) folder")
+
+
+class Deploy(object):
+
+  @staticmethod
+  def get_classes(deploy_type):
+    if deploy_type == 'composer':
+      return {
+        'vars': ComposerVariable,
+        'conf': ComposerConfiguration,
+        'conn': ComposerConnection,
+        'pool': ComposerPool
+      }
+    else:
+      return {
+        'vars': DirectVariable,
+        'conf': DirectConfiguration,
+        'conn': DirectConnection,
+        'pool': DirectPool
+      }
 
 
 class Command(Logged):
@@ -150,15 +169,15 @@ class Command(Logged):
     return conf
 
   def execute(self):
-    try:
+    # try:
       command = self.arguments.get(self.args.command)
       if command is None:
         self.parser.print_help()
       else:
         command['func'](self)
-    except Exception as e:
-      self.log.error("{}".format(str(e).replace('\n', ' ')))
-      raise Exception(e)
+    # except Exception as e:
+    #   self.log.error("{}".format(str(e).replace('\n', ' ')))
+    #   raise Exception(e)
 
 
 def execute(argv=None):
