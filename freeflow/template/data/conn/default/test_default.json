@@ -1,9 +1,0 @@
-{
-  "conn_id": "something",
-  "conn_type": "errorneous",
-  "conn_extra": {
-    "extra__google_cloud_platform__scope": "https://www.googleapis.com/auth/cloud-platform,https://www.googleapis.com/auth/bigquery",
-    "extra__google_cloud_platform__project": "gcp-project-id",
-    "extra__google_cloud_platform__keyfile_dict": "{}"
-  }
-}

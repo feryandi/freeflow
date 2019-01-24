@@ -7,7 +7,7 @@ setup(name='freeflow',
       author='Feryandi Nurdiantoro',
       author_email='feryandi.n@gmail.com',
       license='Apache License 2.0',
-      packages=find_packages(),      
+      packages=find_packages(),
       install_requires=[
         'apache-airflow[crypto]==1.9.0',
         'flake8>=3.6.0',

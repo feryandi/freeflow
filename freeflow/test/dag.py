@@ -1,12 +1,11 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-
 import unittest
-import os
 
 import freeflow.test
 
 from airflow import models as af_models
+
 
 class DagTest(unittest.TestCase):
 

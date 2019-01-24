@@ -1,9 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-
 import unittest
-import os
-import pprint
 
 import freeflow.test
 
@@ -33,7 +30,6 @@ class OperatorBigqueryTest(unittest.TestCase):
             except Exception as e:
                 raise Exception("Error rendering template: " + str(e))
             return task.__class__.template_fields
-
 
         def dry_run_bql(task):
             """ Call the BigQuery dry run API to run the rendered query """
@@ -82,6 +78,7 @@ class OperatorBigqueryTest(unittest.TestCase):
                 except Exception as e:
                     raise Exception('Task: ' + task.task_id + ', ' + str(e))
                     self.assertTrue(False)
+
 
 if __name__ == '__main__':
     unittest.main()
