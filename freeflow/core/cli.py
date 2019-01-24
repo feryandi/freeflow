@@ -23,8 +23,8 @@ except ImportError:
 from freeflow.core.log import Logged
 from freeflow.core.initialization.direct import DirectInitialization
 from freeflow.core.deployment.base import BatchDeploy
-from freeflow.core.deployment.direct import (DirectVariable, DirectConfiguration, DirectConnection, DirectPool)
-from freeflow.core.deployment.composer import (ComposerVariable, ComposerConfiguration, ComposerConnection, ComposerPool)
+from freeflow.core.deployment.direct import (DirectRelocation, DirectVariable, DirectConfiguration, DirectConnection, DirectPool)
+from freeflow.core.deployment.composer import (ComposerRelocation, ComposerVariable, ComposerConfiguration, ComposerConnection, ComposerPool)
 
 import freeflow.test
 
@@ -67,7 +67,12 @@ def lint(command):
 
 
 def deploy(command):
+  clean()
+
   deploy = Deploy().get_classes(command.config.get('core', 'type'))
+
+  command.log.info("Applying folder relocation")
+  deploy['rloc'](command.config).deploy()
 
   command.log.info("Applying variables")
   deploy['vars'](command.path['vars'], command.config).deploy()
@@ -90,6 +95,7 @@ class Deploy(object):
   def get_classes(deploy_type):
     if deploy_type == 'composer':
       return {
+        'rloc': ComposerRelocation,
         'vars': ComposerVariable,
         'conf': ComposerConfiguration,
         'conn': ComposerConnection,
@@ -97,6 +103,7 @@ class Deploy(object):
       }
     else:
       return {
+        'rloc': DirectRelocation,
         'vars': DirectVariable,
         'conf': DirectConfiguration,
         'conn': DirectConnection,

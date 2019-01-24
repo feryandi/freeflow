@@ -1,4 +1,5 @@
 import ConfigParser
+import fnmatch
 import glob
 import json
 import os
@@ -24,6 +25,21 @@ class BaseRunner(Logged):
   @staticmethod
   def run(args, configuration=None):
     raise NotImplementedError('Runner not implemented.')
+
+
+class BaseRelocation(BaseDeploy):
+
+  def __init__(self, configuration):
+    super(BaseRelocation, self).__init__(configuration)
+    self.airflow_home = os.environ.get('AIRFLOW_HOME', '~/')
+
+  @staticmethod
+  def get_files_path(directory, file_pattern):    
+    matches = []
+    for root, dirnames, filenames in os.walk(directory):
+      for filename in fnmatch.filter(filenames, file_pattern):
+        matches.append(os.path.join(root, filename))
+    return matches
 
 
 class BaseVariable(BaseDeploy):

@@ -1,4 +1,6 @@
+import Queue
 import subprocess
+import threading
 
 from freeflow.core.log import SuppressPrints
 import freeflow.core.deployment.base as deployment
@@ -18,6 +20,21 @@ class ComposerRunner(deployment.BaseRunner):
     blob = bucket.blob(destination)
 
     blob.upload_from_filename(source)
+
+  @staticmethod
+  def delete(bucket_name, prefix):
+    def chunck(seq, size):
+      return (seq[i::size] for i in range(size))
+
+    gcs = storage.Client()
+    bucket = gcs.get_bucket(bucket_name)
+    blobs = [blob for blob in bucket.list_blobs(prefix=prefix)]
+    blob_chuncks = list(chunck(blobs, (len(blobs) / 1000) + 1))
+
+    for chunk in blob_chuncks:
+      with gcs.batch():
+        for blob in chunk:
+          blob.delete()
 
   @staticmethod
   def gcloud(args):
@@ -48,16 +65,54 @@ class ComposerRunner(deployment.BaseRunner):
     ComposerRunner.gcloud(cmd)
 
 
+class ComposerRelocation(deployment.BaseRelocation):
+
+  def __init__(self, configuration):
+    super(ComposerRelocation, self).__init__(configuration)
+    self.queue = Queue.Queue()
+
+  def worker(self):
+    while True:
+      try:
+        file = self.queue.get()
+        ComposerRunner.upload(self.configuration.get('composer', 'bucket'),
+                              file,
+                              file.replace(self.airflow_home + "/", ""))
+      except Exception as e:
+        self.log.error("Exception on thread: {}".format(e))
+      finally:
+        self.queue.task_done()
+
+  def deploy(self):
+    folders = ["dags", "data"]
+
+    for folder in folders:
+      self.log.info("Uploading '{}' folder to GCS bucket...".format(folder))
+      self.log.info("Cleaning up the '{}' folder in GCS".format(folder))
+      ComposerRunner.delete(self.configuration.get('composer', 'bucket'), '{}/'.format(folder))
+
+      files = self.__class__.get_files_path("{}/{}".format(self.airflow_home, folder), "*")
+      upload_data = []
+
+      for i in range(len(files) / 10):
+        t = threading.Thread(target=self.worker)
+        t.daemon = True
+        t.start()
+
+      self.log.info("Sending upload request for {} file(s)".format(len(files)))
+      for file in files:
+        self.queue.put(file)
+
+      self.queue.join()
+      self.log.info("Done uploading '{}' folder to GCS bucket".format(folder))
+
+
 class ComposerVariable(deployment.BaseVariable):
 
   def __init__(self, path, configuration):
     super(ComposerVariable, self).__init__(path, configuration)
 
   def deploy(self):
-    ComposerRunner.upload(self.configuration.get('composer', 'bucket'),
-                          self.path,
-                          "data/vars/{}".format(self.filename))
-
     path = '/home/airflow/gcs/data/vars/{}'.format(self.filename)
     cmd = ['variables', '--', '-i', path]
     self.log.debug("Importing variables from file: {}".format(path))

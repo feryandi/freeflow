@@ -25,6 +25,15 @@ class DirectRunner(deployment.BaseRunner):
       args.func(args)
 
 
+class DirectRelocation(deployment.BaseRelocation):
+
+  def __init__(self, configuration):
+    super(DirectRelocation, self).__init__(configuration)
+
+  def deploy(self):
+    self.log.warning("No folder relocation done on direct Airflow deployment.")
+
+
 class DirectVariable(deployment.BaseVariable):
 
   def __init__(self, path, configuration):
