@@ -74,13 +74,13 @@ def test(command):
 
 
 def lint(command):
-    flake8.main(['dags', 'tests'])
+    flake8.main(['dags', 'tests'] + command.args.args.split(' '))
 
 
 def deploy(command):
     clean()
 
-    deploy = Deploy().get_classes(command.config.get('core', 'type'))
+    deploy = Deploy().get_classes(command.args.type)
 
     command.log.info("Applying folder relocation")
     deploy['rloc'](command.config).deploy()
@@ -137,12 +137,12 @@ class Command(Logged):
         'lint': {
             'func': lint,
             'desc': 'lint the code',
-            'args': []
+            'args': ['args']
         },
         'deploy': {
             'func': deploy,
             'desc': 'deploy the code',
-            'args': []
+            'args': ['type']
         }
     }
 

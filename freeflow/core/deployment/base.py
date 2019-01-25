@@ -165,7 +165,7 @@ class BatchDeploy(Logged):
 
     def __check(self):
         if not os.path.isdir(self.folder_path):
-            raise IOError("Connection folder not found.")
+            raise IOError("Folder not found.")
 
     def deploy(self):
         for path in glob.glob("{}/*.json".format(self.folder_path)):
