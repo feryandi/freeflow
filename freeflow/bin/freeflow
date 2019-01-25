@@ -1,0 +1,65 @@
+#!/usr/bin/env python
+import errno
+import os
+import shutil
+import sys
+
+import freeflow
+
+def create_folder(path):
+  try:
+      os.makedirs(path)
+  except OSError as e:
+      if e.errno != errno.EEXIST:
+          raise
+
+
+def create_structure(path, childs):
+  for folder in childs:
+      child_path = '{}/{}'.format(path, folder)
+      create_folder(child_path)
+      create_structure(child_path, childs[folder])
+
+
+def start_project(name, path):
+  structure = {
+      'dags': {},
+      'data': {
+          'conf': {},
+          'conn': {'default': {}},
+          'pool': {'default': {}},
+          'vars': {}
+      },
+      'tests': {},
+      'conf': {}
+  }
+  project_path = '{}/{}'.format(path, name)
+  create_folder(project_path)
+  create_structure(project_path, structure)
+
+  template_path = os.path.join(freeflow.__path__[0], 'template')
+  files = {
+      'manage.py.tpl': 'manage.py',
+      'default.cfg': 'conf/default.cfg',
+      'data/conf.cfg': 'data/conf/default.cfg',
+      'data/conn.json': 'data/conn/default/example.json',
+      'data/pool.json': 'data/pool/default/example.json',
+      'data/vars.json': 'data/vars/dev.json'
+  }
+
+  for file in files:
+      shutil.copyfile('{}/{}'.format(template_path, file),
+                      '{}/{}'.format(project_path, files[file]))
+
+
+def main(argv=None):
+    cwd = os.path.dirname(os.path.realpath('__file__'))
+
+    if sys.argv[1] == 'start':
+        start_project(sys.argv[2], cwd)
+    else:
+        print("Unrecognized command.")
+
+
+if __name__ == '__main__':
+    main()

@@ -12,13 +12,12 @@ from freeflow.core.deployment.direct import DirectConfiguration
 
 class DirectInitialization(object):
 
-    def __init__(self, config_path):
-        if config_path is None:
-            raise AttributeError('Missing initialization configuration path')
-        self.config_path = config_path
+    def __init__(self, configuration, airflow_config):
+        self.configuration = configuration
+        self.airflow_config = airflow_config
 
     def run(self):
         db.initdb()
-        config = DirectConfiguration()
-        config.set(self.config_path)
+        config = DirectConfiguration(self.airflow_config, self.configuration)
+        config.deploy()
         db.resetdb()

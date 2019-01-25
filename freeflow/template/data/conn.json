@@ -1,0 +1,13 @@
+{
+  "conn_id": "example_connection",
+  "conn_type": "",
+  "conn_uri": "",
+  "conn_host": "",
+  "conn_login": "",
+  "conn_password": "",
+  "conn_port": "",
+  "conn_schema": "",
+  "conn_extra": {
+    "extra__example": "value"
+  }
+}

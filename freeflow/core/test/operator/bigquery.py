@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 import unittest
 
-import freeflow.test
+import freeflow.core.test
 
 import pendulum
 
@@ -15,7 +15,7 @@ class OperatorBigqueryTest(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls._dag_files = freeflow.test.dag_files
+        cls._dag_files = freeflow.core.test.dag_files
 
     def test_operator_bigquery(self):
 

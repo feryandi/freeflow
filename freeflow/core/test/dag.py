@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 import unittest
 
-import freeflow.test
+import freeflow.core.test
 
 from airflow import models as af_models
 
@@ -11,7 +11,7 @@ class DagTest(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls._dag_files = freeflow.test.dag_files
+        cls._dag_files = freeflow.core.test.dag_files
 
     def test_dag_integrity(self):
 

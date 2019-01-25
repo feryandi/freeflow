@@ -1,16 +1,14 @@
 import unittest
 
-from freeflow.test.dag import DagTest
-from freeflow.test.operator.bigquery import OperatorBigqueryTest
-from freeflow.test.sensor.externaltask import SensorExternalTaskTest
+from freeflow.core.test.dag import DagTest
+from freeflow.core.test.operator.bigquery import OperatorBigqueryTest
+from freeflow.core.test.sensor.externaltask import SensorExternalTaskTest
 
 from freeflow.core.dag_loader import get_dag_files
 
-test_classes = [
-                                DagTest,
-                                OperatorBigqueryTest,
-                                SensorExternalTaskTest
-                             ]
+test_classes = [DagTest,
+                OperatorBigqueryTest,
+                SensorExternalTaskTest]
 
 dag_files = []
 

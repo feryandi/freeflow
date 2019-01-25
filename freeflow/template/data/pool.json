@@ -1,0 +1,5 @@
+{
+  "name": "example_pool",
+  "slot_count": 10,
+  "pool_description": "An example of pool"
+}
