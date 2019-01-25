@@ -60,10 +60,11 @@ def test(command):
             freeflow.core.test.run()
         except Exception as e:
             command.log.error(e)
+            raise Exception(e)
 
     elif command.args.type == 'dags':
         sys.path.append("{}/dags".format(os.environ.get('AIRFLOW_HOME')))
-        pytest.main(['tests'])
+        raise SystemExit(pytest.main(['tests']))
 
     elif command.args.type is None:
         command.log.error("Please specify test type by using --type")
@@ -96,8 +97,6 @@ def deploy(command):
 
     command.log.info("Applying pool")
     BatchDeploy(command.path['pool'], command.config, deploy['pool']).deploy()
-
-    command.log.warn("Migrating DAG (plugins, data?) folder")
 
 
 class Deploy(object):
@@ -194,15 +193,15 @@ class Command(Logged):
         return conf
 
     def execute(self):
-        # try:
+        try:
             command = self.arguments.get(self.args.command)
             if command is None:
                 self.parser.print_help()
             else:
                 command['func'](self)
-        # except Exception as e:
-        #   self.log.error("{}".format(str(e).replace('\n', ' ')))
-        #   raise Exception(e)
+        except Exception as e:
+          self.log.error("{}".format(str(e).replace('\n', ' ')))
+          raise Exception(e)
 
 
 def execute(argv=None):

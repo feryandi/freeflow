@@ -26,4 +26,7 @@ def run():
 
     test_suites = unittest.TestSuite(suites)
     test_runner = unittest.TextTestRunner()
-    test_runner.run(test_suites)
+    result = test_runner.run(test_suites)
+
+    if len(result.failures) > 0:
+        raise SystemExit(1)
