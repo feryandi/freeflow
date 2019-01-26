@@ -7,6 +7,11 @@ Starting a project for me have always been putting all together the development 
 
 Those things are consists of standardization of folder structure, tracked Airflow's variables and connections, encrypt-decrypt secrets, pre-tests of DAGs, and deployment script.
 
+## Installation
+The package could be installed by running,
+
+`pip install freeflow`
+
 ## How to start?
 Quite easy, just create a new project with these script
 
