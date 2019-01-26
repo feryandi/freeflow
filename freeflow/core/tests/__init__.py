@@ -1,8 +1,11 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+#
 import unittest
 
-from freeflow.core.test.dag import DagTest
-from freeflow.core.test.operator.bigquery import OperatorBigqueryTest
-from freeflow.core.test.sensor.externaltask import SensorExternalTaskTest
+from freeflow.core.tests.dag import DagTest
+from freeflow.core.tests.operator.bigquery import OperatorBigqueryTest
+from freeflow.core.tests.sensor.externaltask import SensorExternalTaskTest
 
 from freeflow.core.dag_loader import get_dag_files
 

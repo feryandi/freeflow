@@ -1,5 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
+#
 import os
 import sys
 import logging
@@ -10,6 +11,12 @@ import lib2to3.pgen2.driver
 
 
 class SuppressPrints(object):
+    """
+    The class is a context manager class that could suppress any
+    prints that being called within the block. This functionality
+    is needed when there is third-party logging nor prints that
+    obscuring actual log.
+    """
     def __enter__(self):
         self._original_stdout = sys.stdout
         sys.stdout = open(os.devnull, 'w')
@@ -20,19 +27,28 @@ class SuppressPrints(object):
 
 
 class Logged(object):
+    """
+    Base class that give ability for other classes to do logging
+    by simple call `self.log` and make the logger consistent across
+    project.
+    """
     def __init__(self):
         self.log = logging.getLogger(str(__name__).split('.')[0])
 
 
 class Lib2to3Logging(object):
+    """
+    Helper class to override the lib2to3 logger
+    """
     def getLogger(self):
         return logging.getLogger('lib2to3')
 
 
+# Overriding lib2to3 logger
 lib2to3.pgen2.driver.logging = Lib2to3Logging()
 
-
+# Suppress lib2to3 log to only shows when there is an `ERROR`
 logging.getLogger('lib2to3').setLevel(logging.ERROR)
 
-
+# Supress Airflow log to only shows when there is an `ERROR`
 LoggingMixin().log.setLevel(logging.ERROR)

@@ -1,5 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
+#
 import ConfigParser
 import fnmatch
 import glob
@@ -11,6 +12,12 @@ from freeflow.core.security import decrypt
 
 
 class BaseDeploy(Logged):
+    """
+    Base class for all deployment related classes.
+
+    :param configuration: environment configuration
+    :type configuration: dict
+    """
 
     def __init__(self, configuration):
         super(BaseDeploy, self).__init__()
@@ -21,6 +28,9 @@ class BaseDeploy(Logged):
 
 
 class BaseRunner(Logged):
+    """
+    Base class for runner in different environment.
+    """
 
     def __init__(self):
         super(BaseRunner, self).__init__()
@@ -31,6 +41,12 @@ class BaseRunner(Logged):
 
 
 class BaseRelocation(BaseDeploy):
+    """
+    Base class for folder relocation deployment.
+
+    :param configuration: environment configuration
+    :type configuration: dict
+    """
 
     def __init__(self, configuration):
         super(BaseRelocation, self).__init__(configuration)
@@ -46,6 +62,14 @@ class BaseRelocation(BaseDeploy):
 
 
 class BaseVariable(BaseDeploy):
+    """
+    Base class for variable deployment.
+
+    :param path: variable file path
+    :type path: str
+    :param configuration: environment configuration
+    :type configuration: dict
+    """
 
     def __init__(self, path, configuration):
         super(BaseVariable, self).__init__(configuration)
@@ -67,6 +91,14 @@ class BaseVariable(BaseDeploy):
 
 
 class BaseConfiguration(BaseDeploy):
+    """
+    Base class for Airflow configuration deployment.
+
+    :param path: Airflow configuration file path
+    :type path: str
+    :param configuration: environment configuration
+    :type configuration: dict
+    """
 
     def __init__(self, path, configuration):
         super(BaseConfiguration, self).__init__(configuration)
@@ -85,6 +117,14 @@ class BaseConfiguration(BaseDeploy):
 
 
 class BaseConnection(BaseDeploy):
+    """
+    Base class for connection deployment.
+
+    :param path: connection file path
+    :type path: str
+    :param configuration: environment configuration
+    :type configuration: dict
+    """
 
     def __init__(self, path, configuration):
         super(BaseConnection, self).__init__(configuration)
@@ -126,6 +166,14 @@ class BaseConnection(BaseDeploy):
 
 
 class BasePool(BaseDeploy):
+    """
+    Base class for pool deployment.
+
+    :param path: pool file path
+    :type path: str
+    :param configuration: environment configuration
+    :type configuration: dict
+    """
 
     def __init__(self, path, configuration):
         super(BasePool, self).__init__(configuration)
@@ -155,6 +203,17 @@ class BasePool(BaseDeploy):
 
 
 class BatchDeploy(Logged):
+    """
+    Helper class to do a batch deploy.
+
+    :param folder_path: folder path where files for the
+        deployment resides
+    :type folder_path: str
+    :param configuration: environment configuration
+    :type configuration: dict
+    :param deployer: type of class that will be deployed
+    :type deployer: BaseDeploy
+    """
 
     def __init__(self, folder_path, configuration, deployer):
         super(BatchDeploy, self).__init__()

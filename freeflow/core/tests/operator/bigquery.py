@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 import unittest
 
-import freeflow.core.test
+import freeflow.core.tests
 
 import pendulum
 
@@ -15,13 +15,20 @@ class OperatorBigqueryTest(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls._dag_files = freeflow.core.test.dag_files
+        cls._dag_files = freeflow.core.tests.dag_files
 
     def test_operator_bigquery(self):
 
         def get_rendered_template(task):
-            """ Render the BigQuery SQL script template """
-            # In order to handle file not found
+            """
+            Returns a rendered BigQuery SQL script.
+
+            :param task: BigQueryOperator task that need to be rendered
+            :type task: BigQueryOperator
+            :return: list of templated fields from BigQueryOperator
+            :rtype: list(str)
+            """
+            # Added dags to the bql script path to create correct path
             task.bql = '/dags/' + task.bql
             dttm = pendulum.parse('2018-10-21T00:00:00')
             ti = af_models.TaskInstance(task=task, execution_date=dttm)
@@ -32,7 +39,14 @@ class OperatorBigqueryTest(unittest.TestCase):
             return task.__class__.template_fields
 
         def dry_run_bql(task):
-            """ Call the BigQuery dry run API to run the rendered query """
+            """
+            Call the BigQuery dry run API to run the rendered query.
+
+            :param task: BigQueryOperator task that need to be rendered
+            :type task: BigQueryOperator
+            :return: query reply from the API
+            :rtype: json
+            """
             query = getattr(task, 'bql')
 
             hook = BigQueryHook(bigquery_conn_id=task.bigquery_conn_id,
@@ -59,6 +73,16 @@ class OperatorBigqueryTest(unittest.TestCase):
             return query_reply
 
         def get_bq_tasks(dag_files):
+            """
+            Filters tasks list to only returns task which is a
+            BigQueryOperator class.
+
+            :param dag_files: list of DAG instance, its filename and
+                              DAG module
+            :type dag_class: list(dict)
+            :return: filtered tasks
+            :rtype: list(BigQueryOperator)
+            """
             tasks = []
             for file in dag_files:
                 for task in file['instance']['tasks']:

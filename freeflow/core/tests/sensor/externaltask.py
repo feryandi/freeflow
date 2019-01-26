@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 import unittest
 
-import freeflow.core.test
+import freeflow.core.tests
 
 from airflow.operators.sensors import ExternalTaskSensor
 
@@ -11,7 +11,7 @@ class SensorExternalTaskTest(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls._dag_files = freeflow.core.test.dag_files
+        cls._dag_files = freeflow.core.tests.dag_files
 
     def test_sensor_external_task(self):
 

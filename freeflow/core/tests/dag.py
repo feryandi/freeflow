@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 import unittest
 
-import freeflow.core.test
+import freeflow.core.tests
 
 from airflow import models as af_models
 
@@ -11,19 +11,30 @@ class DagTest(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls._dag_files = freeflow.core.test.dag_files
+        cls._dag_files = freeflow.core.tests.dag_files
 
     def test_dag_integrity(self):
 
         def check_valid_dag(dag):
-            """ DAG Sanity Check """
+            """
+            Checks whether the python file is really a runnable DAG.
+
+            :param dag: python module (file)
+            :type dag: module
+            """
             self.assertTrue(
                 any(isinstance(var, af_models.DAG) for var in vars(dag).values()),
                 "File does not contains a DAG instance"
             )
 
         def check_single_dag_file(dag_class):
-            """ Single DAG on a File """
+            """
+            Checks for count of the DAG in a single file. It should be
+            only one.
+            
+            :param dag_class: list of DAG class instance
+            :type dag_class: list(DAG)
+            """
             self.assertTrue(
                 len(dag_class) <= 1,
                 "File should only contains a single DAG"
@@ -31,8 +42,13 @@ class DagTest(unittest.TestCase):
 
         def check_dag_name(dag_class, filename):
             """
-            DAG name should be snake case and same with the filename
-            Exception: if need to do DAG versioning, use <name>_v<number>
+            Checks that DAG name should be snake case and same with the
+            filename. If DAG versioning is needed, use <name>_v<number>
+
+            :param dag_class: list of DAG class instance
+            :type dag_class: list(DAG)            
+            :param filename: the filename which DAG class(es) resides
+            :type filename: str
             """
             dag_id = dag_class[0].dag_id
             self.assertEqual(
@@ -46,7 +62,12 @@ class DagTest(unittest.TestCase):
             )
 
         def check_task_name_within_dag(task_class):
-            """ Task name should be unique within a DAG to ensure clarity """
+            """
+            Checks uniqueness of task name within a DAG to ensure clarity
+
+            :param task_class: list of task instance
+            :type task_class: list(BaseOperator)
+            """
             tasks = task_class
             task_ids = []
             for task in tasks:

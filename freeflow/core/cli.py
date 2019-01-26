@@ -36,7 +36,7 @@ from freeflow.core.deployment.composer import (ComposerRelocation,
                                                ComposerConnection,
                                                ComposerPool)
 
-import freeflow.core.test
+import freeflow.core.tests
 
 
 def clean():
@@ -57,7 +57,7 @@ def test(command):
     if command.args.type == 'general':
         try:
             deploy(command)
-            freeflow.core.test.run()
+            freeflow.core.tests.run()
         except Exception as e:
             command.log.error(e)
             raise Exception(e)

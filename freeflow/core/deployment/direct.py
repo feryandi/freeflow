@@ -1,5 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
+#
 import freeflow.core.deployment.base as deployment
 
 from freeflow.core.log import SuppressPrints
@@ -16,6 +17,10 @@ except ImportError:
 
 
 class DirectRunner(deployment.BaseRunner):
+    """
+    Static runner class that could be called to run a CLI command
+    directly to the installed Airflow in local machine.
+    """
 
     def __init__(self):
         super(DirectRunner, self).__init__()
@@ -29,6 +34,14 @@ class DirectRunner(deployment.BaseRunner):
 
 
 class DirectRelocation(deployment.BaseRelocation):
+    """
+    Empty implementation of folder relocation for the direct deploy.
+    This is not implemented because it is assumed that the folders
+    already always in place to be able to run the Airflow.
+
+    :param configuration: environment configuration
+    :type configuration: dict
+    """
 
     def __init__(self, configuration):
         super(DirectRelocation, self).__init__(configuration)
@@ -39,6 +52,15 @@ class DirectRelocation(deployment.BaseRelocation):
 
 
 class DirectVariable(deployment.BaseVariable):
+    """
+    Deploy the variable in direct deployment mode which runs the
+    Airflow import CLI command.
+
+    :param path: variable file path
+    :type path: str
+    :param configuration: environment configuration
+    :type configuration: dict
+    """
 
     def __init__(self, path, configuration):
         super(DirectVariable, self).__init__(path, configuration)
@@ -57,6 +79,16 @@ class DirectVariable(deployment.BaseVariable):
 
 
 class DirectConfiguration(deployment.BaseConfiguration):
+    """
+    Deploy the configuration by replacing the default configuration
+    value with the given one. If there is no replacer, then the default
+    value are being kept.
+
+    :param path: Airflow configuration file path
+    :type path: str
+    :param configuration: environment configuration
+    :type configuration: dict
+    """
 
     def __init__(self, path, configuration):
         super(DirectConfiguration, self).__init__(path, configuration)
@@ -76,6 +108,15 @@ class DirectConfiguration(deployment.BaseConfiguration):
 
 
 class DirectConnection(deployment.BaseConnection):
+    """
+    Deploy the connection by deleting it first, and the adding (or re-adding)
+    the connection via the CLI command.
+
+    :param path: connection file path
+    :type path: str
+    :param configuration: environment configuration
+    :type configuration: dict
+    """
 
     def __init__(self, path, configuration):
         super(DirectConnection, self).__init__(path, configuration)
@@ -91,6 +132,15 @@ class DirectConnection(deployment.BaseConnection):
 
 
 class DirectPool(deployment.BasePool):
+    """
+    Deploy the pool by deleting it first, and the adding (or re-adding)
+    the pool via the CLI command.
+
+    :param path: pool file path
+    :type path: str
+    :param configuration: environment configuration
+    :type configuration: dict
+    """
 
     def __init__(self, path, configuration):
         super(DirectPool, self).__init__(path, configuration)

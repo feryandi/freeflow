@@ -1,5 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
+#
 import Queue
 import subprocess
 import threading
@@ -11,6 +12,12 @@ from google.cloud import storage
 
 
 class ComposerRunner(deployment.BaseRunner):
+    """
+    Static runner class that could be called to run a CLI command
+    within a Google Cloud Composer machine. This class also contains
+    helper classes for Google Cloud related stuffs such as upload
+    and deleting files from Google Cloud Storage.
+    """
 
     def __init__(self):
         super(ComposerRunner, self).__init__()
@@ -71,6 +78,18 @@ class ComposerRunner(deployment.BaseRunner):
 
 
 class ComposerRelocation(deployment.BaseRelocation):
+    """
+    Folder relocation deployment for Google Composer are being done
+    by copying the local files to the Google Cloud Storage. This class
+    will copy the folder `dags` and `data` to the respective folder
+    with the same name in Google Cloud Storage.
+
+    The uploading process is using threading to make sure the process
+    is fast.
+
+    :param configuration: environment configuration
+    :type configuration: dict
+    """
 
     def __init__(self, configuration):
         super(ComposerRelocation, self).__init__(configuration)
@@ -124,6 +143,15 @@ class ComposerRelocation(deployment.BaseRelocation):
 
 
 class ComposerVariable(deployment.BaseVariable):
+    """
+    Deploy the variable in composer deployment mode which runs the
+    Airflow import CLI command.
+
+    :param path: variable file path
+    :type path: str
+    :param configuration: environment configuration
+    :type configuration: dict
+    """
 
     def __init__(self, path, configuration):
         super(ComposerVariable, self).__init__(path, configuration)
@@ -138,6 +166,16 @@ class ComposerVariable(deployment.BaseVariable):
 
 
 class ComposerConfiguration(deployment.BaseConfiguration):
+    """
+    Empty implementation of configuration deployment for the composer.
+    This is not implemented because it is safer to do the configuration
+    overriding via the Composer dashboard until Google gives API to do so.
+
+    :param path: Airflow configuration file path
+    :type path: str
+    :param configuration: environment configuration
+    :type configuration: dict
+    """
 
     def __init__(self, path, configuration):
         super(ComposerConfiguration, self).__init__(path, configuration)
@@ -151,6 +189,15 @@ class ComposerConfiguration(deployment.BaseConfiguration):
 
 
 class ComposerConnection(deployment.BaseConnection):
+    """
+    Deploy the connection by deleting it first, and the adding (or re-adding)
+    the connection via the CLI command.
+
+    :param path: connection file path
+    :type path: str
+    :param configuration: environment configuration
+    :type configuration: dict
+    """
 
     def __init__(self, path, configuration):
         super(ComposerConnection, self).__init__(path, configuration)
@@ -166,6 +213,15 @@ class ComposerConnection(deployment.BaseConnection):
 
 
 class ComposerPool(deployment.BasePool):
+    """
+    Deploy the pool by deleting it first, and the adding (or re-adding)
+    the pool via the CLI command.
+
+    :param path: pool file path
+    :type path: str
+    :param configuration: environment configuration
+    :type configuration: dict
+    """
 
     def __init__(self, path, configuration):
         super(ComposerPool, self).__init__(path, configuration)

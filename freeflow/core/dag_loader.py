@@ -1,5 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
+#
 import pkgutil
 import os
 
@@ -8,9 +9,22 @@ from airflow.models import BaseOperator
 
 
 def explore_package(module_name):
-    """ This function returns all of the DAG within dag folder """
+    """
+    The function will explore the package / module given and
+    list all of the *.py and *.pyc files as child modules. The
+    function is helpful to do dynamic importing based on whats
+    inside a folder.
+
+    :param module_name: target folder to be explored as module
+    :type module_name: str
+    :return: python files given as modules
+    :rtype: Iterable(str)
+
+    :raise AssertionError: when there is nothing inside the
+                           folder
+    """
     loader = pkgutil.get_loader(module_name)
-    assert loader is not None, "Cannot find any DAG files on module '{}'" \
+    assert loader is not None, "Cannot find any files on module '{}'" \
                                .format(module_name)
 
     for sub_module in pkgutil.walk_packages([loader.filename]):
@@ -22,8 +36,13 @@ def explore_package(module_name):
 
 def get_instance_class(dag):
     """
-    This functions will return dag instance
-    and task instance of the DAG file
+    Retruns DAG instances and Task instances within a given
+    DAG module.
+
+    :param dag: DAG module
+    :type dag: module
+    :return: dictionary of dags and tasks instance
+    :rtype: dict
     """
     dags = []
     tasks = []
@@ -39,12 +58,22 @@ def get_instance_class(dag):
 
 
 def get_dag_files():
-    dag_files = []
-    root_dir = os.environ.get('AIRFLOW_HOME', '')
+    """
+    Returns DAG instances and its metadata that are exists
+    on the designated dags folder. It also will ignore DAG
+    in folder named udf (abbr. for user-defined functions)
 
-    packages = explore_package('dags'.format(root_dir))  # TO-DO
+    :return: list of DAG instance, its filename and
+             DAG module
+    :rtype: list(dict)
+    """
+    dag_files = []
+
+    # TODO: Make sure that dags folder is always this one
+    packages = explore_package('dags')
     for package in packages:
-        if not package.startswith('dags.udf'):  # TO-DO
+        # TODO: It should ignore all folder, not only udf
+        if not package.startswith('dags.udf'):
             module = __import__(package)
             filename = package.split('.')[1]
 
@@ -54,11 +83,3 @@ def get_dag_files():
                               'dag': dag,
                               'instance': instance})
     return dag_files
-
-# get_dag_files()
-
-
-# @pytest.fixture(autouse=True, scope='session')
-# def airflow_test_mode():
-#     airflow.configuration.load_test_config()
-#     airflow.utils.db.initdb()
