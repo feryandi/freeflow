@@ -106,4 +106,40 @@ Similar to adding connection, adding pools also using JSON with these template,
 Adding DAGs is pretty much the same as normal Airflow. Just put it on the `dags/` folder.
 
 ### Running Airflow
+#### Running Locally
+To run locally, first you have to initialize the Airflow by using the command:
 
+`python manage.py --env your_env init`
+
+Then, deploy the Airflow by using:
+
+`python manage.py --env your_env deploy --type direct`
+
+Next, run the Airflow as usual by using `airflow webserver` and `airflow scheduler`.
+
+#### Running on Composer
+Running on Composer doesn't need initialization. Just make sure that you already put the needed Composer environment data on your environment configuration, and then run:
+
+`python manage.py --env your_composer_env deploy --type composer`
+
+Make sure that you are already authenticated using `gcloud auth application-default login` and that your account have the access to deploy the Composer.
+
+### Running Tests
+The tests are being divided into two, called: `general` and `dags`.
+
+#### General Tests
+General tests are tests that are provided by this template to make sure that your script is running smoothly without triggering the red ribbon flag on upper UI.
+
+This tests includes:
+- DAG checks: name, validity, tasks name.
+- ExternalTaskSensor checks: make sure it doesn't stuck in a stupid way (e.g. wrong DAG name reffered)
+- BigQueryOperator checks: dry run all the queries to make sure no invalid query getting pushed.
+- ... hopefully more
+
+#### DAGs Tests
+This the tests that user created. This basically tests that resides on the `tests/` folder.
+
+## Disclaimer
+This is heavilly experimental and I do not guarantee anything. If you have any issues or feedbacks please put it on this repository issue page.
+
+Have a great day!
