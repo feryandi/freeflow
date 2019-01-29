@@ -100,10 +100,15 @@ class DirectConfiguration(deployment.BaseConfiguration):
 
         for section in self.config.sections():
             for (key, val) in self.config.items(section):
-                airflow_config.set(section, key, val)
+                try:
+                    airflow_config.add_section(section)
+                except:
+                    pass
+                finally:
+                    airflow_config.set(section, key, val)
                 self.log.info("Added [{}] {} = {}".format(section, key, val))
 
-        with open(airflow_config_path, 'wb') as config_file:
+        with open(airflow_config_path, 'w') as config_file:
             airflow_config.write(config_file)
 
 

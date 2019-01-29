@@ -1,7 +1,10 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 #
-import ConfigParser
+try:
+    import configparser
+except:
+    import ConfigParser as configparser
 import fnmatch
 import glob
 import json
@@ -111,7 +114,7 @@ class BaseConfiguration(BaseDeploy):
         if not os.path.exists(path):
             raise IOError("Missing configuration file.")
 
-        conf = ConfigParser.ConfigParser()
+        conf = configparser.ConfigParser()
         conf.read(path)
         return conf
 
@@ -151,6 +154,10 @@ class BaseConnection(BaseDeploy):
         args = ['conn_id', 'conn_uri', 'conn_extra',
                 'conn_type', 'conn_host', 'conn_login',
                 'conn_password', 'conn_schema', 'conn_port']
+        try:
+            basestring
+        except NameError:
+            basestring = str
 
         cmd = []
         for arg in args:

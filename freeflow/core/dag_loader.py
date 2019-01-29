@@ -27,7 +27,12 @@ def explore_package(module_name):
     assert loader is not None, "Cannot find any files on module '{}'" \
                                .format(module_name)
 
-    for sub_module in pkgutil.walk_packages([loader.filename]):
+    try:
+        filename = loader.filename
+    except:
+        filename = '/'.join(loader.get_filename().split('/')[:-1])
+
+    for sub_module in pkgutil.walk_packages([filename]):
         _, sub_module_name, _ = sub_module
         qname = module_name + "." + sub_module_name
         yield qname

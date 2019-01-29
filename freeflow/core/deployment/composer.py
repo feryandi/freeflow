@@ -1,7 +1,10 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 #
-import Queue
+try:
+    import queue
+except:
+    import Queue as queue
 import subprocess
 import threading
 
@@ -93,7 +96,7 @@ class ComposerRelocation(deployment.BaseRelocation):
 
     def __init__(self, configuration):
         super(ComposerRelocation, self).__init__(configuration)
-        self.queue = Queue.Queue()
+        self.queue = queue.Queue()
 
     def worker(self):
         while True:

@@ -1,7 +1,10 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
+try:
+    import configparser
+except:
+    import ConfigParser as configparser
 import argparse
-import ConfigParser
 import os
 import sys
 
@@ -59,8 +62,7 @@ def test(command):
             deploy(command)
             freeflow.core.tests.run()
         except Exception as e:
-            command.log.error(e)
-            raise Exception(e)
+            raise
 
     elif command.args.type == 'dags':
         sys.path.append("{}/dags".format(os.environ.get('AIRFLOW_HOME')))
@@ -188,7 +190,7 @@ class Command(Logged):
         return self.parser.parse_args()
 
     def __read_config(self, path):
-        conf = ConfigParser.ConfigParser()
+        conf = configparser.ConfigParser()
         conf.read(path)
         return conf
 
@@ -200,8 +202,8 @@ class Command(Logged):
             else:
                 command['func'](self)
         except Exception as e:
-          self.log.error("{}".format(str(e).replace('\n', ' ')))
-          raise Exception(e)
+            self.log.error("{}".format(str(e).replace('\n', ' ')))
+            raise
 
 
 def execute(argv=None):
