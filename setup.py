@@ -1,7 +1,7 @@
 from setuptools import find_packages, setup
 
 setup(name='freeflow',
-      version='0.1.7',
+      version='0.1.8',
       description='Airflow development and deployment, simplified.',
       url='http://github.com/feryandi/freeflow',
       author='Feryandi Nurdiantoro',
