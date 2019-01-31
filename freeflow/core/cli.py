@@ -77,7 +77,10 @@ def test(command):
 
 
 def lint(command):
-    flake8.main(['dags', 'tests'] + command.args.args.split(' '))
+    additional_args = []
+    if command.args.args is not None:
+        additional_args = command.args.args.split(' ')
+    flake8.main(['dags', 'tests'] + additional_args)
 
 
 def deploy(command):
