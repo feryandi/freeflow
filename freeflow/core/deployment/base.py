@@ -3,7 +3,7 @@
 #
 try:
     import configparser
-except:
+except Exception:
     import ConfigParser as configparser
 import fnmatch
 import glob

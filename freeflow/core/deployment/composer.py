@@ -3,12 +3,11 @@
 #
 try:
     import queue
-except:
+except Exception:
     import Queue as queue
 import subprocess
 import threading
 
-from freeflow.core.log import SuppressPrints
 import freeflow.core.deployment.base as deployment
 
 from google.cloud import storage
@@ -41,7 +40,6 @@ class ComposerRunner(deployment.BaseRunner):
         gcs = storage.Client()
         bucket = gcs.get_bucket(bucket_name)
         blobs = [blob for blob in bucket.list_blobs(prefix=prefix)]
-        print(bucket_name)
         blob_chuncks = list(chunck(blobs, int(len(blobs) / 1000) + 1))
 
         for chunk in blob_chuncks:
@@ -67,7 +65,6 @@ class ComposerRunner(deployment.BaseRunner):
 
     @staticmethod
     def run(args, configuration=None):
-        # with SuppressPrints():
         cmd = ['config',
                'set',
                'project',

@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 try:
     import configparser
-except:
+except Exception:
     import ConfigParser as configparser
 import argparse
 import os
@@ -62,7 +62,7 @@ def test(command):
         try:
             deploy(command, 'direct')
             freeflow.core.tests.run()
-        except Exception as e:
+        except Exception:
             raise
 
     elif command.args.type == 'dags':

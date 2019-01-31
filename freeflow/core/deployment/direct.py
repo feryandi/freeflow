@@ -114,7 +114,7 @@ class DirectConfiguration(deployment.BaseConfiguration):
             for (key, val) in self.config.items(section):
                 try:
                     airflow_config.add_section(section)
-                except:
+                except Exception:
                     pass
                 finally:
                     airflow_config.set(section, key, val)

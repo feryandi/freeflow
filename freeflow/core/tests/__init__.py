@@ -34,8 +34,8 @@ def run():
 
     suites = []
     for test_class in test_classes:
-            suite = test_loader.loadTestsFromTestCase(test_class)
-            suites.append(suite)
+        suite = test_loader.loadTestsFromTestCase(test_class)
+        suites.append(suite)
 
     test_suites = unittest.TestSuite(suites)
     test_runner = unittest.TextTestRunner()

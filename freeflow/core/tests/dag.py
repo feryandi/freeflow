@@ -31,7 +31,7 @@ class DagTest(unittest.TestCase):
             """
             Checks for count of the DAG in a single file. It should be
             only one.
-            
+
             :param dag_class: list of DAG class instance
             :type dag_class: list(DAG)
             """
@@ -46,7 +46,7 @@ class DagTest(unittest.TestCase):
             filename. If DAG versioning is needed, use <name>_v<number>
 
             :param dag_class: list of DAG class instance
-            :type dag_class: list(DAG)            
+            :type dag_class: list(DAG)
             :param filename: the filename which DAG class(es) resides
             :type filename: str
             """

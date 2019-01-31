@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 #
 import pkgutil
-import os
 
 from airflow import DAG
 from airflow.models import BaseOperator
@@ -29,7 +28,7 @@ def explore_package(module_name):
 
     try:
         filename = loader.filename
-    except:
+    except Exception:
         filename = '/'.join(loader.get_filename().split('/')[:-1])
 
     for sub_module in pkgutil.walk_packages([filename]):
