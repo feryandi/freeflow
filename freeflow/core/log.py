@@ -4,10 +4,30 @@
 import os
 import sys
 import logging
+try:
+    import StringIO
+except ImportError:
+    pass
 
 from airflow.utils.log.logging_mixin import LoggingMixin
 
 import lib2to3.pgen2.driver
+
+
+class FetchPrints(object):
+    """
+    Fetch printed value into a string.
+    """
+    def __enter__(self):
+        self._original_stdout = sys.stdout
+        try:
+            sys.stdout = buffer = StringIO.StringIO()
+        except Exception:
+            sys.stdout = buffer = io.StringIO()
+        return buffer
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        sys.stdout = self._original_stdout
 
 
 class SuppressPrints(object):

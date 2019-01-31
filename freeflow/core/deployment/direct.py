@@ -3,12 +3,10 @@
 #
 import freeflow.core.deployment.base as deployment
 
-from freeflow.core.log import SuppressPrints
+from freeflow.core.log import (FetchPrints, SuppressPrints)
 
 try:
     from airflow.bin import cli
-    from airflow import settings
-    from airflow.models import Variable
 except ImportError:
     raise ImportError(
         "Couldn't find Airflow. Are you sure it's installed?"
@@ -27,10 +25,16 @@ class DirectRunner(deployment.BaseRunner):
 
     @staticmethod
     def run(args, configuration=None):
+        cmd_prints = None
         with SuppressPrints():
             parser = cli.get_parser()
             args = parser.parse_args(args)
-            args.func(args)
+
+            with FetchPrints() as buffer:
+                args.func(args)
+                cmd_prints = buffer.getvalue()
+
+        return cmd_prints
 
 
 class DirectRelocation(deployment.BaseRelocation):
@@ -65,17 +69,26 @@ class DirectVariable(deployment.BaseVariable):
     def __init__(self, path, configuration):
         super(DirectVariable, self).__init__(path, configuration)
 
+    def __delete(self, variable):
+        cmd = ['variables', '-x', variable]
+        DirectRunner.run(cmd)
+
     def deploy(self):
-        session = settings.Session()
-        session.query(Variable).delete()
-        session.commit()
-        session.close()
+        cmd = ['variables']
+        current_vars = DirectRunner.run(cmd)
+        current_vars = current_vars.split('\n')
+        for var in current_vars:
+            self.__delete(var)
 
         cmd = ['variables', '-i', self.path]
         self.log.debug("Importing variables from file: {}".format(self.path))
 
-        DirectRunner.run(cmd)
-        self.log.info("Successfully updated variables")
+        result = DirectRunner.run(cmd)
+        if "successfully" in result:
+            self.log.info(result)
+        else:
+            self.log.error(result)
+            raise SystemExit(1)
 
 
 class DirectConfiguration(deployment.BaseConfiguration):

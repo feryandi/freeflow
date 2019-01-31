@@ -57,14 +57,16 @@ def initialize(command):
 
 def test(command):
     clean()  # Prevent pyc files to be considered as DAG
+
     if command.args.type == 'general':
         try:
-            deploy(command)
+            deploy(command, 'direct')
             freeflow.core.tests.run()
         except Exception as e:
             raise
 
     elif command.args.type == 'dags':
+        deploy(command, 'direct')
         sys.path.append("{}/dags".format(os.environ.get('AIRFLOW_HOME')))
         raise SystemExit(pytest.main(['tests']))
 
@@ -83,10 +85,13 @@ def lint(command):
     flake8.main(['dags', 'tests'] + additional_args)
 
 
-def deploy(command):
+def deploy(command, deploy_type=None):
     clean()
 
-    deploy = Deploy().get_classes(command.args.type)
+    if deploy_type is None:
+        deploy_type = command.args.type
+
+    deploy = Deploy().get_classes(deploy_type)
 
     command.log.info("Applying folder relocation")
     deploy['rloc'](command.config).deploy()
