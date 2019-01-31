@@ -10,6 +10,7 @@ import glob
 import json
 import os
 
+from six import string_types
 from freeflow.core.log import Logged
 from freeflow.core.security import decrypt
 
@@ -154,16 +155,12 @@ class BaseConnection(BaseDeploy):
         args = ['conn_id', 'conn_uri', 'conn_extra',
                 'conn_type', 'conn_host', 'conn_login',
                 'conn_password', 'conn_schema', 'conn_port']
-        try:
-            basestring
-        except NameError:
-            basestring = str
 
         cmd = []
         for arg in args:
             if self.data.get(str(arg)) is not None:
                 param = self.data.get(str(arg))
-                if not isinstance(param, basestring):
+                if not isinstance(param, string_types):
                     param = json.dumps(param)
 
                 cmd += ['--{}'.format(arg), str(param)]

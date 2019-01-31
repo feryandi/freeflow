@@ -20,6 +20,7 @@ setup(name='freeflow',
         'pandas==0.23.4',
         'pytest==4.1.1',
         'oauth2client==4.1.3',
+        'six==1.12.0',
         'google-cloud-storage==1.13.2'
       ],
       zip_safe=False)
