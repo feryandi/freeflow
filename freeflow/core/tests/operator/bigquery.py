@@ -4,7 +4,7 @@ import unittest
 
 import freeflow.core.tests
 
-import pendulum
+import datetime
 
 from airflow import models as af_models
 from airflow.contrib.operators.bigquery_operator import BigQueryOperator
@@ -29,8 +29,12 @@ class OperatorBigqueryTest(unittest.TestCase):
             :rtype: list(str)
             """
             # Added dags to the bql script path to create correct path
-            task.bql = '/dags/' + task.bql
-            dttm = pendulum.parse('2018-10-21T00:00:00')
+            if hasattr(task, 'sql'):
+                task.sql = '/dags/' + task.sql
+            if hasattr(task, 'bql'):
+                task.bql = '/dags/' + task.bql
+
+            dttm = datetime.datetime(2018, 10, 21, 0, 0, 0)
             ti = af_models.TaskInstance(task=task, execution_date=dttm)
             try:
                 ti.render_templates()
@@ -48,6 +52,8 @@ class OperatorBigqueryTest(unittest.TestCase):
             :rtype: json
             """
             query = getattr(task, 'bql')
+            if query is None:
+                query = getattr(task, 'sql')
 
             hook = BigQueryHook(bigquery_conn_id=task.bigquery_conn_id,
                                 delegate_to=task.delegate_to)

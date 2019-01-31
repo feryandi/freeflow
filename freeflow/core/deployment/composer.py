@@ -41,9 +41,12 @@ class ComposerRunner(deployment.BaseRunner):
         gcs = storage.Client()
         bucket = gcs.get_bucket(bucket_name)
         blobs = [blob for blob in bucket.list_blobs(prefix=prefix)]
-        blob_chuncks = list(chunck(blobs, (len(blobs) / 1000) + 1))
+        print(bucket_name)
+        blob_chuncks = list(chunck(blobs, int(len(blobs) / 1000) + 1))
 
         for chunk in blob_chuncks:
+            if len(chunk) == 0:
+                continue
             with gcs.batch():
                 for blob in chunk:
                     blob.delete()
@@ -130,7 +133,7 @@ class ComposerRelocation(deployment.BaseRelocation):
                                                           folder),
                                                   "*")
 
-            for i in range(len(files) / 10):
+            for i in range(int(len(files) / 10)):
                 t = threading.Thread(target=self.worker)
                 t.daemon = True
                 t.start()

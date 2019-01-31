@@ -1,7 +1,7 @@
 from setuptools import find_packages, setup
 
 setup(name='freeflow',
-      version='0.1.8',
+      version='0.1.9',
       description='Airflow development and deployment, simplified.',
       url='http://github.com/feryandi/freeflow',
       author='Feryandi Nurdiantoro',
@@ -11,16 +11,9 @@ setup(name='freeflow',
       packages=find_packages(),
       include_package_data=True,
       install_requires=[
-        'apache-airflow[crypto]==1.9.0',
         'flake8>=3.6.0',
-        'google-api-python-client==1.7.4',
-        'google-cloud-bigquery==1.8.1',
-        'pendulum==2.0.4',
-        'pandas-gbq==0.6.1',
-        'pandas==0.23.4',
-        'pytest==4.1.1',
-        'oauth2client==4.1.3',
+        'google-cloud-storage==1.13.2',
         'six==1.12.0',
-        'google-cloud-storage==1.13.2'
+        'pytest==4.1.1'
       ],
       zip_safe=False)

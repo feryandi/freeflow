@@ -14,14 +14,14 @@ os.environ['AIRFLOW_HOME'] = CURRENT_WORKING_DIR
 try:
     from flake8.main import cli as flake8
 except ImportError:
-    raise ImportError(
+    raise Exception(
         "Couldn't find Flake8. Are you sure it's installed?"
     )
 
 try:
     import pytest
 except ImportError:
-    raise ImportError(
+    raise Exception(
         "Couldn't find PyTest. Are you sure it's installed?"
     )
 

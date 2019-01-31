@@ -41,6 +41,8 @@ def start_project(name, path):
   files = {
       'manage.py.tpl': 'manage.py',
       'default.cfg': 'conf/default.cfg',
+      '__init__.py.tpl': 'dags/__init__.py',
+      '__init__.py.tpl': 'test/__init__.py',
       'data/conf.cfg': 'data/conf/default.cfg',
       'data/conn.json': 'data/conn/default/example.json',
       'data/pool.json': 'data/pool/default/example.json',

@@ -5,10 +5,12 @@
 try:
     from freeflow.core.cli import execute
 except ImportError as e:
-    print(e)
     raise ImportError(
-      "Couldn't find Freeflow. Are you sure it's installed?"
+      "Couldn't find Freeflow. Are you sure it's installed? "
+      "Error details: {}".format(e)
     )
+except Exception:
+    raise
 
 
 def main(argv=None):

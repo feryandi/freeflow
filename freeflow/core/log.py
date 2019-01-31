@@ -1,6 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 #
+import io
 import os
 import sys
 import logging
@@ -9,7 +10,12 @@ try:
 except ImportError:
     pass
 
-from airflow.utils.log.logging_mixin import LoggingMixin
+try:
+    from airflow.utils.log.logging_mixin import LoggingMixin
+except ImportError:
+    raise Exception(
+        "Couldn't find Airflow. Are you sure it's installed?"
+    )
 
 import lib2to3.pgen2.driver
 

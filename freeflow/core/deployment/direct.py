@@ -8,9 +8,8 @@ from freeflow.core.log import (FetchPrints, SuppressPrints)
 try:
     from airflow.bin import cli
 except ImportError:
-    raise ImportError(
+    raise Exception(
         "Couldn't find Airflow. Are you sure it's installed?"
-        "install: `pip install apache-airflow==1.9.0`"
     )
 
 

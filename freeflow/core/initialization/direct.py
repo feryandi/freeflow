@@ -4,7 +4,7 @@
 try:
     from airflow.utils import db
 except ImportError:
-    raise ImportError(
+    raise Exception(
         "Couldn't find Airflow. Are you sure it's installed?"
     )
 
@@ -31,7 +31,6 @@ class DirectInitialization(object):
         self.airflow_config = airflow_config
 
     def run(self):
-        db.initdb()
         config = DirectConfiguration(self.airflow_config, self.configuration)
         config.deploy()
-        db.resetdb()
+        db.initdb()
