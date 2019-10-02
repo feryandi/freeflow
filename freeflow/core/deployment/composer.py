@@ -130,16 +130,17 @@ class ComposerRelocation(deployment.BaseRelocation):
                                                           folder),
                                                   "*")
 
+            for i in range(int(len(files) / 10)):
+                t = threading.Thread(target=self.worker)
+                t.daemon = True
+                t.start()
+
             self.log.info("Sending upload request for {} file(s)"
                           .format(len(files)))
-            bucket = self.configuration.get('composer', 'bucket')
             for file in files:
-                gcs_target_path = file.replace(self.airflow_home + "/", "")
+                self.queue.put(file)
 
-                ComposerRunner.upload(bucket,
-                                      file,
-                                      gcs_target_path)
-
+            self.queue.join()
             self.log.info("Done uploading '{}' folder to GCS bucket"
                           .format(folder))
 
