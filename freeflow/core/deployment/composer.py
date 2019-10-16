@@ -130,7 +130,11 @@ class ComposerRelocation(deployment.BaseRelocation):
                                                           folder),
                                                   "*")
 
-            for i in range(int(len(files) / 10)):
+            x = int(len(files) / 10)
+            if x <= 0:
+                x = 1
+
+            for i in range(x):
                 t = threading.Thread(target=self.worker)
                 t.daemon = True
                 t.start()
