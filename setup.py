@@ -14,7 +14,7 @@ setup(name='freeflow',
         'flake8>=3.6.0',
         'google-cloud-core==1.0.3',
         'google-cloud-storage==1.20.0',
-        'six==1.12.0',
+        'six==1.12.0, ==1.13.0',
         'pytest==4.6.4'
       ],
       zip_safe=False)
